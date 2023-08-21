@@ -1,0 +1,19 @@
+{
+    "config": {
+      "error": {
+        "auth": "API Key/API Secret invalid",
+        "connection_error": "Unable to connect"
+      },
+      "flow_title": "Rainpoint Flow",
+      "step": {
+        "user": {
+          "title": "Rainpoint Authentication",
+          "description": "Enter your Rainpoint Clound credentials",
+          "data": {
+            "api_key": "API Key",
+            "api_secret": "API Secret"
+          }        
+        }
+      }
+    }
+  }
