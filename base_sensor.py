@@ -1,5 +1,7 @@
 import logging
-from abc import ABC
+#from abc import ABC
+from homeassistant.core import callback
+
 from datetime import datetime
 
 from typing import Any, Optional
@@ -8,6 +10,8 @@ import traceback
 
 from .api import Rainpoint
 
+
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
@@ -15,17 +19,24 @@ from homeassistant.components.sensor import (
     ENTITY_ID_FORMAT
 )
 
-from homeassistant.util import slugify
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+
 
 from .const import (
     ATTRS_IRRIGATION_CALL,
     ATTRS_BASEINFORMATION_CALL,
+    DOMAIN,
+    CONF_CATEGORY
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class BaseSensor(SensorEntity, ABC):
+class BaseSensor(CoordinatorEntity, SensorEntity): 
     """
     Representation of a Irrigation sensor
     """
@@ -33,13 +44,15 @@ class BaseSensor(SensorEntity, ABC):
     def _icon(self) -> str:
         return "mdi:valve"
 
-    def __init__(self, api_key: str, api_secret, deviceId: str) -> None:  #: str, deviceId: str) -> None:
-        super().__init__()
+    def __init__(self, coordinator, api_key: str, api_secret, deviceId: str) -> None:  #: str, deviceId: str) -> None:
+        super().__init__(coordinator)
+        self.coordinator = coordinator
         self.api_key = api_key
         self.api_secret = api_secret
         self.deviceId = deviceId
         self._attr_icon = self._icon()
         self._available: bool = True
+        _LOGGER.warning("Base sensor initialisation %s" % deviceId)
 
 
     @property
@@ -56,6 +69,27 @@ class BaseSensor(SensorEntity, ABC):
         """Return True if entity is available."""
         return self._available
     
+
+    @property
+    def device_info(self) -> dict[str, Any]:
+        """Return the device_info."""
+        _LOGGER.warning("Device Info coordinator data %s" % self.coordinator.data)
+
+        return {
+            "name": self.deviceId,
+            "identifiers": { (DOMAIN, self.deviceId) },
+            "model": CONF_CATEGORY,
+            "manufacturer": "Rainpoint",
+        }
+
+    
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        #self._attr_is_on = self.coordinator.data[self.idx]["state"]
+        _LOGGER.info("Base Sensor - Update Callback")
+        self.async_write_ha_state()
+
     @staticmethod
     def is_active() -> bool:
         """
@@ -63,6 +97,9 @@ class BaseSensor(SensorEntity, ABC):
         """
         return self._available
     
+
+
+
     async def get_deviceId(self, rainpoint: Rainpoint) -> dict[str]:
         """
         asynchronously get and parse / deviceID response
@@ -90,3 +127,5 @@ class BaseSensor(SensorEntity, ABC):
         update sensor
         """
         pass
+
+

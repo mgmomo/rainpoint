@@ -5,6 +5,7 @@ import logging
 import tinytuya
 
 from .const import CONF_CATEGORY
+from homeassistant.exceptions import ConfigEntryAuthFailed
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class Rainpoint:
         self._dummy_device = ""
         logger.info("Init Rainpoint %s" % self._cloudsession)
     
-    def login(self) -> bool:
+    def login(self):
         """
         login with credentials 
         """
@@ -34,18 +35,16 @@ class Rainpoint:
 
         devices = self._cloudsession.getdevices(verbose=True)
         if "Error" in devices:
-            return False
-
+            raise ConfigEntryAuthFailed("Authentication error")
 
         logger.info("Tuya Cloud Login - Success" )
-
-        return True
+        return
     
     def devices(self):
         """Returns devices for currently logged in user."""
         devices = self._cloudsession.getdevices(verbose=True)
         if "Error" in devices:
-            raise Exception("Authentication error")
+            raise ConfigEntryAuthFailed("Authentication error")
         
         deviceList = []
         for item in devices['result']:

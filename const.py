@@ -19,7 +19,9 @@ CONF_API_KEY = "api_key"
 CONF_API_SECRET = "api_secret"
 
 
-CONF_DEVICES = "tuya_devices"
+CONF_DEVICES = "rainpoint_devices"
+CONF_COORDINATOR = "raiknpoint_coordinator"
+CONF_CATEGORY = "sfkzq"
 
 
 

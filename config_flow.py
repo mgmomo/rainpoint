@@ -30,14 +30,20 @@ class RainpointCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """
         Validates credentials for Rainpoint Cloud.
         """
-        rainpoint = Rainpoint(api_key, api_secret)
-        if not await self.hass.async_add_executor_job(rainpoint.login):
-            raise Exception("Authentication error")
+        try:
+            rainpoint = Rainpoint(api_key, api_secret)
+            await self.hass.async_add_executor_job(rainpoint.login)
+            
+            devices = await self.hass.async_add_executor_job(rainpoint.devices)
+            _LOGGER.info("Rainpoint Validate Authenticatin done devices %s" % devices)
+            return devices if devices is not None else []
         
-        devices = await self.hass.async_add_executor_job(rainpoint.devices)
-        #return zps[0]["zaehlpunkte"] if zps is not None else []
-        _LOGGER.info("Rainpoint Validate Authenticatin done")
-        return devices
+        except Exception as exception:  # pylint: disable=broad-except
+            _LOGGER.error("Error validating Tuya Cloud Access")
+            _LOGGER.exception(exception)
+        
+        
+
 
     async def async_step_user(self, user_input: Optional[dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""

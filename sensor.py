@@ -16,7 +16,8 @@ from homeassistant.components.sensor import (
 from .const import (
     CONF_API_KEY,
     CONF_API_SECRET, 
-    CONF_DEVICES
+    CONF_DEVICES,
+    CONF_COORDINATOR
 )
 
 from homeassistant.core import DOMAIN
@@ -25,6 +26,18 @@ from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
     HomeAssistantType,
+)
+
+
+#Coorsinator
+from homeassistant.components.light import LightEntity
+from homeassistant.core import callback
+from homeassistant.exceptions import ConfigEntryAuthFailed
+import async_timeout
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,13 +62,22 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
+    _LOGGER.info("------------")
+    _LOGGER.info(config)
+    _LOGGER.info("------------")
+    coordinator = hass.data[DOMAIN][CONF_COORDINATOR]
+    _LOGGER.info(coordinator)
+    _LOGGER.info("------------")
+
+    await coordinator.async_config_entry_first_refresh()
+    
+
     live_sensors = [
-        LiveSensor(config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
+        LiveSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
         for deviceId in config[CONF_DEVICES]
     ]
-    _LOGGER.debug("Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
+    _LOGGER.info("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
     async_add_entities(live_sensors, update_before_add=True)
-    
 
 
 async def async_setup_platform(
@@ -67,7 +89,9 @@ async def async_setup_platform(
     ] = None,  # pylint: disable=unused-argument
 ) -> None:
     """Set up the sensor platform by adding it into configuration.yaml"""
-    live_sensor = LiveSensor(config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
+    _LOGGER.info("!!!! Create sensor entity")
+    live_sensor = LiveSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
     async_add_entities([live_sensor], update_before_add=True)
+
 
 

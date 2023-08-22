@@ -1,7 +1,12 @@
 import logging
 from datetime import datetime
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.core import callback
+
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorDeviceClass
+)
 
 from .api import Rainpoint
 from .base_sensor import BaseSensor
@@ -15,8 +20,17 @@ class LiveSensor(BaseSensor, SensorEntity):
     for measuring total increasing energy consumption for a specific zaehlpunkt
     """
 
-    def __init__(self, aki_key: str, api_secret: str, deviceId: str) -> None:
-        super().__init__(aki_key, api_secret, deviceId)
+
+    def __init__(self, coordinator,  aki_key: str, api_secret: str, deviceId: str) -> None:
+        super().__init__(coordinator, aki_key, api_secret, deviceId)
+        self._attr_device_class = SensorDeviceClass.VOLUME
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        #self._attr_is_on = self.coordinator.data[self.idx]["state"]
+        _LOGGER.info("Live Sensor - Update Callback")
+        self.async_write_ha_state()
 
 
     async def async_update(self):
