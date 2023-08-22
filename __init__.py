@@ -2,7 +2,11 @@
 from datetime import timedelta
 from typing import Any
 import logging
-from .const import CONF_COORDINATOR
+from .const import (
+    CONF_COORDINATOR, 
+    CONF_DEVICES
+)
+
 from homeassistant import core, config_entries
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.core import DOMAIN
@@ -34,11 +38,11 @@ async def async_setup_entry(
 
 
 class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the Vienna Smartmeter API."""
+    """Class to manage fetching data from the Rainpoint API."""
 
     def __init__(self, hass, entry) -> None:
         """Initialize."""
-        _LOGGER.warning("Initialize Rainpoint update coordinator")
+        _LOGGER.info("Initialize Rainpoint update coordinator")
         
         scan_interval = timedelta(seconds=30)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
@@ -47,15 +51,20 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> Any:
         """Update data via library."""
         try:
-            _LOGGER.warning("Refreshing Rainpoint update coordinator %s " % self.entry_data)
+            _LOGGER.info("Refreshing Rainpoint update coordinator %s " % self.entry_data)
             rainpoint = Rainpoint(self.entry_data['api_key'], self.entry_data['api_secret'])
-            return await self.hass.async_add_executor_job(rainpoint.login)
+            await self.hass.async_add_executor_job(rainpoint.login)
 
-            #await self.client.refresh_token()
-            #return True
+            sensors_properties = {}
+            for deviceId in self.entry_data[CONF_DEVICES]:
+                sensors_properties[deviceId] = await  self.hass.async_add_executor_job(rainpoint.getProperties, deviceId)
+                
+            _LOGGER.warning(sensors_properties)
+            return sensors_properties
+
         except ConfigEntryAuthFailed as exception:
             self._available = False
-            _LOGGER.warning("Error retrieving data from smart meter api ")
+            _LOGGER.warning("Error retrieving data from Rainpoint api ")
             raise UpdateFailed() from exception
         except Exception as exception:
             raise UpdateFailed() from exception

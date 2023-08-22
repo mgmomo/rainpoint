@@ -52,7 +52,7 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         self.deviceId = deviceId
         self._attr_icon = self._icon()
         self._available: bool = True
-        _LOGGER.warning("Base sensor initialisation %s" % deviceId)
+        _LOGGER.info("Base sensor initialisation %s" % deviceId)
 
 
     @property

@@ -4,10 +4,13 @@
 import logging
 import tinytuya
 
-from .const import CONF_CATEGORY
+from .const import (
+    CONF_CATEGORY,
+    CONF_URL
+)
 from homeassistant.exceptions import ConfigEntryAuthFailed
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 class Rainpoint:
     """Rainpoint client."""
@@ -25,7 +28,7 @@ class Rainpoint:
         self._api_region = "eu"
         self._cloudsession = None
         self._dummy_device = ""
-        logger.info("Init Rainpoint %s" % self._cloudsession)
+        _LOGGER.info("Init Rainpoint %s" % self._cloudsession)
     
     def login(self):
         """
@@ -37,7 +40,7 @@ class Rainpoint:
         if "Error" in devices:
             raise ConfigEntryAuthFailed("Authentication error")
 
-        logger.info("Tuya Cloud Login - Success" )
+        _LOGGER.info("Tuya Cloud Login - Success" )
         return
     
     def devices(self):
@@ -52,9 +55,18 @@ class Rainpoint:
             if item['category'] == CONF_CATEGORY:
                 deviceList.append(item["id"])
         
-        logger.info("Tuya Cloud Request - found  %s devices" % len(deviceList))
+        _LOGGER.info("Tuya Cloud Request - found  %s devices" % len(deviceList))
 
         return deviceList
+    
+    def getProperties(self, deviceId):
+        result = self._cloudsession.cloudrequest(CONF_URL.format(deviceId))
+        
+        if not result['success']:
+            raise ConfigEntryAuthFailed("Authentication error")
+
+        return result['result']['properties']
+
     
     def sensorValues(self, deviceId):
         """Returns response from 'consumptions' endpoint."""

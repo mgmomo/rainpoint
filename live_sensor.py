@@ -16,8 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class LiveSensor(BaseSensor, SensorEntity):
     """
-    Representation of a Wiener Smartmeter sensor
-    for measuring total increasing energy consumption for a specific zaehlpunkt
+    Representation of a Rainpoint sensor
     """
 
 
@@ -29,7 +28,7 @@ class LiveSensor(BaseSensor, SensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         #self._attr_is_on = self.coordinator.data[self.idx]["state"]
-        _LOGGER.info("Live Sensor - Update Callback")
+        _LOGGER.warning("Live Sensor - Update Callback")
         self.async_write_ha_state()
 
 
@@ -98,7 +97,7 @@ class LiveSensor(BaseSensor, SensorEntity):
             self._updatets = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         except TimeoutError as e:
             self._available = False
-            _LOGGER.warning("Error retrieving data from smart meter api - Timeout: %s" % e)
+            _LOGGER.warning("Error retrieving data from Rainpoint api - Timeout: %s" % e)
         except RuntimeError as e:
             self._available = False
-            _LOGGER.exception("Error retrieving data from smart meter api - Error: %s" % e)
+            _LOGGER.exception("Error retrieving data from Rainpoint api - Error: %s" % e)
