@@ -1,6 +1,7 @@
 import logging
 #from abc import ABC
 from homeassistant.core import callback
+from homeassistant.util import slugify
 
 from datetime import datetime
 
@@ -41,24 +42,45 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     Representation of a Irrigation sensor
     """
 
-    def _icon(self) -> str:
-        return "mdi:valve"
+    
 
-    def __init__(self, coordinator, api_key: str, api_secret, deviceId: str) -> None:  #: str, deviceId: str) -> None:
+
+    def __init__(self, coordinator, api_key: str, api_secret, deviceId: str) -> None:  
         super().__init__(coordinator)
         self.coordinator = coordinator
         self.api_key = api_key
         self.api_secret = api_secret
         self.deviceId = deviceId
-        self._attr_icon = self._icon()
-        self._available: bool = True
-        _LOGGER.info("Base sensor initialisation %s" % deviceId)
 
+        self._attr_native_value = int
+        self._attr_extra_state_attributes = {}
+        self._attr_name = deviceId
+    
+        
+        self.attrs: dict[str, Any] = {}
+        self._name: str = deviceId
+        self._state: int | str | None = None
+        self._available: bool = True
+        self._updatets: str | None = None
+        
+
+        _LOGGER.debug("Base sensor initialisation %s" % deviceId)
 
     @property
-    def icon(self) -> str:
-        return self._attr_icon
-
+    def _id(self):
+        return ENTITY_ID_FORMAT.format(slugify(self._name).lower())
+    
+    @property
+    def icon(self) -> str | None:
+        return "mdi:valve"
+    
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        if "label" in self._attr_extra_state_attributes:
+            return self._attr_extra_state_attributes["label"]
+        return self._name
+    
     @property
     def unique_id(self) -> str:
         """Return the unique ID of the sensor."""
@@ -69,6 +91,9 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         """Return True if entity is available."""
         return self._available
     
+    @property
+    def state(self) -> Optional[str]:  # pylint: disable=overridden-final-method
+        return self._state
 
     @property
     def device_info(self) -> dict[str, Any]:

@@ -55,9 +55,27 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
             rainpoint = Rainpoint(self.entry_data['api_key'], self.entry_data['api_secret'])
             await self.hass.async_add_executor_job(rainpoint.login)
 
+
             sensors_properties = {}
+            sensor_values = {}
             for deviceId in self.entry_data[CONF_DEVICES]:
-                sensors_properties[deviceId] = await  self.hass.async_add_executor_job(rainpoint.getProperties, deviceId)
+                result = await  self.hass.async_add_executor_job(rainpoint.getProperties, deviceId)
+                
+                for i in result:
+                    if i['code'] == 'Temp':
+                        sensor_values['Temp'] = i['value']
+                    if i['code'] == 'Moisure':
+                        sensor_values['Moisure'] = i['value']
+                    if i['code'] == 'Flow':
+                        sensor_values['Flow'] = i['value']
+                    if i['code'] == 'BatteryCapacity':
+                        sensor_values['BatteryCapacity'] = i['value']
+                    if i['code'] == 'WorkStatus':
+                        sensor_values['WorkStatus'] = i['value'] 
+                    if i['code'] == 'MoisurePowerStatus':
+                        sensor_values['MoisurePowerStatus'] = i['value'] 
+                    
+                    sensors_properties[deviceId] = sensor_values
                 
             _LOGGER.warning(sensors_properties)
             return sensors_properties

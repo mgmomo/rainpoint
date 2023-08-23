@@ -14,39 +14,37 @@ from .base_sensor import BaseSensor
 _LOGGER = logging.getLogger(__name__)
 
 
-class LiveSensor(BaseSensor, SensorEntity):
+class TempSensor(BaseSensor, SensorEntity):
     """
     Representation of a Rainpoint sensor
     """
+    def __init__(self, coordinator,  aki_key: str, api_secret: str, deviceId: str) -> None:
+        super().__init__(coordinator, aki_key, api_secret, deviceId)
+        self._attr_device_class = SensorDeviceClass.TEMPERATURE
 
     @staticmethod
     def entityIdent(s: str) -> str:
-        return f'{s}_moisure'
-    
-    def __init__(self, coordinator,  aki_key: str, api_secret: str, deviceId: str) -> None:
-        super().__init__(coordinator, aki_key, api_secret, deviceId)
-        self._attr_device_class = SensorDeviceClass.VOLUME
+        return f'{s}_temperature'
 
     @property
     def icon(self) -> str:
-        return "mdi:water"
+        return "mdi:thermometer"
     
     @property
     def _id(self) -> str:
-        return LiveSensor.entityIdent(super()._id)
+        return TempSensor.entityIdent(super()._id)
     
     @property
     def name(self) -> str:
-        return LiveSensor.entityIdent(super().name)
+        return TempSensor.entityIdent(super().name)
     
 
     @property
     def unique_id(self) -> str:
         """Return the unique ID of the sensor."""
-        return LiveSensor.entityIdent(super().unique_id)
+        return TempSensor.entityIdent(super().unique_id)
+
     
-
-
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
@@ -54,7 +52,9 @@ class LiveSensor(BaseSensor, SensorEntity):
         _LOGGER.warning("Live Sensor - Update Callback: %s" % self.deviceId)
         _LOGGER.warning(self.coordinator.data[self.deviceId])
 
-
+        self._state = self.coordinator.data[self.deviceId]['Temp']
+        self._available = True
+        self._updatets = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         self.async_write_ha_state()
 
 

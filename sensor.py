@@ -51,6 +51,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
+from .temp_sensor import TempSensor
 from .live_sensor import LiveSensor
 
 
@@ -71,13 +72,19 @@ async def async_setup_entry(
 
     await coordinator.async_config_entry_first_refresh()
     
-
+    
+    temp_sensors = [
+        TempSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
+        for deviceId in config[CONF_DEVICES]
+    ]
     live_sensors = [
         LiveSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
         for deviceId in config[CONF_DEVICES]
     ]
     _LOGGER.info("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
+    async_add_entities(temp_sensors, update_before_add=True)
     async_add_entities(live_sensors, update_before_add=True)
+    
 
 
 async def async_setup_platform(
@@ -88,10 +95,11 @@ async def async_setup_platform(
         DiscoveryInfoType
     ] = None,  # pylint: disable=unused-argument
 ) -> None:
-    """Set up the sensor platform by adding it into configuration.yaml"""
+    #Set up the sensor platform by adding it into configuration.yaml
     _LOGGER.info("!!!! Create sensor entity")
     live_sensor = LiveSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
-    async_add_entities([live_sensor], update_before_add=True)
+    temp_sensor = TempSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
+    async_add_entities([temp_sensor, live_sensor], update_before_add=True)
 
 
 
