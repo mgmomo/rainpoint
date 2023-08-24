@@ -45,20 +45,22 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     
 
 
-    def __init__(self, coordinator, api_key: str, api_secret, deviceId: str) -> None:  
+    def __init__(self, coordinator, api_key: str, api_secret, deviceId: str, deviceName: str) -> None:  
         super().__init__(coordinator)
+        _LOGGER.warning("Base sensor device name  %s" % deviceName)
         self.coordinator = coordinator
         self.api_key = api_key
         self.api_secret = api_secret
         self.deviceId = deviceId
+        self.deviceName = deviceName
 
         self._attr_native_value = int
         self._attr_extra_state_attributes = {}
-        self._attr_name = deviceId
+        self._attr_name = deviceName
     
         
         self.attrs: dict[str, Any] = {}
-        self._name: str = deviceId
+        self._name: str = deviceName
         self._state: int | str | None = None
         self._available: bool = True
         self._updatets: str | None = None
@@ -101,7 +103,7 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         _LOGGER.warning("Device Info coordinator data %s" % self.coordinator.data)
 
         return {
-            "name": self.deviceId,
+            "name": self.deviceName,
             "identifiers": { (DOMAIN, self.deviceId) },
             "model": CONF_CATEGORY,
             "manufacturer": "Rainpoint",

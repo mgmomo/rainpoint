@@ -30,7 +30,6 @@ from homeassistant.helpers.typing import (
 
 
 #Coorsinator
-from homeassistant.components.light import LightEntity
 from homeassistant.core import callback
 from homeassistant.exceptions import ConfigEntryAuthFailed
 import async_timeout
@@ -52,7 +51,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 from .temp_sensor import TempSensor
-from .live_sensor import LiveSensor
+from .moisture_sensor import MoistureSensor
 
 
 
@@ -74,16 +73,23 @@ async def async_setup_entry(
     
     
     temp_sensors = [
-        TempSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
+        TempSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId, config[CONF_DEVICES][deviceId]['deviceName'])
         for deviceId in config[CONF_DEVICES]
     ]
-    live_sensors = [
-        LiveSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId)
+    moisture_sensors = [
+        MoistureSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId, config[CONF_DEVICES][deviceId]['deviceName'])
         for deviceId in config[CONF_DEVICES]
     ]
+
+    """
+    for deviceId in config[CONF_DEVICES]:
+        _LOGGER.warning("!!!Rainpoint device  : %s", deviceId)
+        _LOGGER.warning("!!!Rainpoint device  : %s", config[CONF_DEVICES][deviceId]['deviceName'])
+    """
+
     _LOGGER.info("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
     async_add_entities(temp_sensors, update_before_add=True)
-    async_add_entities(live_sensors, update_before_add=True)
+    async_add_entities(moisture_sensors, update_before_add=True)
     
 
 
@@ -97,9 +103,9 @@ async def async_setup_platform(
 ) -> None:
     #Set up the sensor platform by adding it into configuration.yaml
     _LOGGER.info("!!!! Create sensor entity")
-    live_sensor = LiveSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
-    temp_sensor = TempSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
-    async_add_entities([temp_sensor, live_sensor], update_before_add=True)
+    moisture_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
+    temp_sensor = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
+    async_add_entities([temp_sensor, moisture_sensors], update_before_add=True)
 
 
 

@@ -57,15 +57,16 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
 
 
             sensors_properties = {}
-            sensor_values = {}
+            
             for deviceId in self.entry_data[CONF_DEVICES]:
                 result = await  self.hass.async_add_executor_job(rainpoint.getProperties, deviceId)
-                
+
+                sensor_values = {}
                 for i in result:
                     if i['code'] == 'Temp':
                         sensor_values['Temp'] = i['value']
-                    if i['code'] == 'Moisure':
-                        sensor_values['Moisure'] = i['value']
+                    if i['code'] == 'Moisure':   # spelling error in api!
+                        sensor_values['Moisture'] = i['value']
                     if i['code'] == 'Flow':
                         sensor_values['Flow'] = i['value']
                     if i['code'] == 'BatteryCapacity':
@@ -75,9 +76,8 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
                     if i['code'] == 'MoisurePowerStatus':
                         sensor_values['MoisurePowerStatus'] = i['value'] 
                     
-                    sensors_properties[deviceId] = sensor_values
-                
-            _LOGGER.warning(sensors_properties)
+                sensors_properties[deviceId] = sensor_values
+    
             return sensors_properties
 
         except ConfigEntryAuthFailed as exception:

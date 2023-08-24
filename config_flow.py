@@ -8,6 +8,7 @@ from typing import Any, Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+
 from homeassistant import config_entries
 
 from .api import Rainpoint
@@ -26,7 +27,7 @@ class RainpointCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def validate_auth(self, api_key: str, api_secret: str) -> list[dict]:
+    async def validate_auth(self, api_key: str, api_secret: str) -> dict[dict]:
         """
         Validates credentials for Rainpoint Cloud.
         """
@@ -60,9 +61,10 @@ class RainpointCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 # Input is valid, set data
                 self.data = user_input
+                _LOGGER.warning("Setup Device device data: %s" % devices)
                 self.data[CONF_DEVICES] = devices
 
-                return self.async_create_entry(title="Rainpoint", data=self.data )
+                return self.async_create_entry(title='Rainpoint', data=self.data )
         _LOGGER.info("MG Setup API key done")
         return self.async_show_form(
             step_id="user", data_schema=KEY_SCHEMA, errors=errors

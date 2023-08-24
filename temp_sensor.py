@@ -3,9 +3,16 @@ from datetime import datetime
 
 from homeassistant.core import callback
 
+
+
 from homeassistant.components.sensor import (
     SensorEntity,
-    SensorDeviceClass
+    SensorDeviceClass,
+    SensorStateClass,
+)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (
+    UnitOfTemperature,
 )
 
 from .api import Rainpoint
@@ -18,13 +25,21 @@ class TempSensor(BaseSensor, SensorEntity):
     """
     Representation of a Rainpoint sensor
     """
-    def __init__(self, coordinator,  aki_key: str, api_secret: str, deviceId: str) -> None:
-        super().__init__(coordinator, aki_key, api_secret, deviceId)
-        self._attr_device_class = SensorDeviceClass.TEMPERATURE
+    def __init__(self, coordinator,  aki_key: str, api_secret: str, deviceId: str, deviceName: str) -> None:
+        super().__init__(coordinator, aki_key, api_secret, deviceId, deviceName)
+        self._attr_device_class = SensorDeviceClass.TEMPERATURE 
+        self._attr_state_class = SensorStateClass.TOTAL
+        self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+        self._attr_unit_of_measurement = UnitOfTemperature.CELSIUS
 
     @staticmethod
     def entityIdent(s: str) -> str:
         return f'{s}_temperature'
+    
+
+    @staticmethod
+    def entityNaming(s: str) -> str:
+        return f'{s} Temperature'
 
     @property
     def icon(self) -> str:
@@ -36,7 +51,7 @@ class TempSensor(BaseSensor, SensorEntity):
     
     @property
     def name(self) -> str:
-        return TempSensor.entityIdent(super().name)
+        return TempSensor.entityNaming(super().name)
     
 
     @property
@@ -49,7 +64,7 @@ class TempSensor(BaseSensor, SensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         #self._attr_is_on = self.coordinator.data[self.idx]["state"]
-        _LOGGER.warning("Live Sensor - Update Callback: %s" % self.deviceId)
+        _LOGGER.warning("Temp Sensor - Update Callback: %s" % self.deviceId)
         _LOGGER.warning(self.coordinator.data[self.deviceId])
 
         self._state = self.coordinator.data[self.deviceId]['Temp']

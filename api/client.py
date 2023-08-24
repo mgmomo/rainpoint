@@ -49,12 +49,15 @@ class Rainpoint:
         if "Error" in devices:
             raise ConfigEntryAuthFailed("Authentication error")
         
-        deviceList = []
+        
+        deviceList = {}
         for item in devices['result']:
             #logger.info(item['name'])
+            
             if item['category'] == CONF_CATEGORY:
-                deviceList.append(item["id"])
-        
+                deviceList[item["id"]] = { 'deviceId' : item["id"] , 'deviceName': item["name"]}
+               
+        _LOGGER.warning("Client device List %s" % deviceList )
         _LOGGER.info("Tuya Cloud Request - found  %s devices" % len(deviceList))
 
         return deviceList
@@ -65,6 +68,7 @@ class Rainpoint:
         if not result['success']:
             raise ConfigEntryAuthFailed("Authentication error")
 
+        
         return result['result']['properties']
 
     
