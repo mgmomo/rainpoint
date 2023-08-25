@@ -74,6 +74,8 @@ class FlowSensor(BaseSensor, SensorEntity):
             rainpoint = Rainpoint(self.api_key, self.api_secret)
             await self.hass.async_add_executor_job(rainpoint.login)
             deviceID = await self.get_deviceId(rainpoint)
+            """ initial Update"""
+            self._state = self.coordinator.data[self.deviceId]['Flow']
             self._attr_extra_state_attributes = {'DeviceID':deviceID}
             self._available = True
             self._updatets = datetime.now().strftime("%d.%m.%Y %H:%M:%S")

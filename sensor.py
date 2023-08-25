@@ -42,6 +42,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 from .temp_sensor import TempSensor
 from .moisture_sensor import MoistureSensor
 from .flow_sensor import FlowSensor
+from .status_sensor import StatusSensor
 
 
 
@@ -69,11 +70,16 @@ async def async_setup_entry(
         FlowSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId, config[CONF_DEVICES][deviceId]['deviceName'])
         for deviceId in config[CONF_DEVICES]
     ]
+    status_sensors = [
+        StatusSensor(coordinator, config[CONF_API_KEY], config[CONF_API_SECRET], deviceId, config[CONF_DEVICES][deviceId]['deviceName'])
+        for deviceId in config[CONF_DEVICES]
+    ]
 
     _LOGGER.debug("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
     async_add_entities(temp_sensors, update_before_add=True)
     async_add_entities(moisture_sensors, update_before_add=True)
     async_add_entities(flow_sensors, update_before_add=True)
+    async_add_entities(status_sensors, update_before_add=True)
     
 
 
@@ -89,7 +95,8 @@ async def async_setup_platform(
     temp_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
     moisture_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
     flow_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
-    async_add_entities([temp_sensors, moisture_sensors, flow_sensors], update_before_add=True)
+    status_sensors = StatusSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
+    async_add_entities([temp_sensors, moisture_sensors, flow_sensors, status_sensors], update_before_add=True)
 
 
 
