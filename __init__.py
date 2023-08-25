@@ -13,6 +13,7 @@ from homeassistant.core import DOMAIN
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import Rainpoint
+from .const import CONF_SCAN_INTERVAL_MINUTES
 
 
 
@@ -44,7 +45,8 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
         """Initialize."""
         _LOGGER.info("Initialize Rainpoint update coordinator")
         
-        scan_interval = timedelta(seconds=30)
+        scan_interval = timedelta(minutes=CONF_SCAN_INTERVAL_MINUTES)
+
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
         self.entry_data  = hass.data[DOMAIN][entry.entry_id]
 
@@ -73,8 +75,8 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
                         sensor_values['BatteryCapacity'] = i['value']
                     if i['code'] == 'WorkStatus':
                         sensor_values['WorkStatus'] = i['value'] 
-                    if i['code'] == 'MoisurePowerStatus':
-                        sensor_values['MoisurePowerStatus'] = i['value'] 
+                    if i['code'] == 'MoisurePowerStatus': # spelling error in api!
+                        sensor_values['MoisturePowerStatus'] = i['value'] 
                     
                 sensors_properties[deviceId] = sensor_values
     

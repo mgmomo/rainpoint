@@ -11,25 +11,17 @@ import traceback
 
 from .api import Rainpoint
 
-
-
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorStateClass,
     SensorEntity,
     ENTITY_ID_FORMAT
 )
 
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator,
-    UpdateFailed,
 )
 
 
 from .const import (
-    ATTRS_IRRIGATION_CALL,
-    ATTRS_BASEINFORMATION_CALL,
     DOMAIN,
     CONF_CATEGORY
 )
@@ -42,8 +34,8 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     Representation of a Irrigation sensor
     """
 
-    
-
+    def _icon(self) -> str:
+        return "mdi:valve"
 
     def __init__(self, coordinator, api_key: str, api_secret, deviceId: str, deviceName: str) -> None:  
         super().__init__(coordinator)
@@ -57,6 +49,7 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         self._attr_native_value = int
         self._attr_extra_state_attributes = {}
         self._attr_name = deviceName
+        self._attr_icon = self._icon()
     
         
         self.attrs: dict[str, Any] = {}
@@ -65,7 +58,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         self._available: bool = True
         self._updatets: str | None = None
         
-
         _LOGGER.debug("Base sensor initialisation %s" % deviceId)
 
     @property
@@ -73,8 +65,8 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         return ENTITY_ID_FORMAT.format(slugify(self._name).lower())
     
     @property
-    def icon(self) -> str | None:
-        return "mdi:valve"
+    def icon(self) -> str :
+        return self._attr_icon 
     
     @property
     def name(self) -> str:
@@ -109,7 +101,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
             "manufacturer": "Rainpoint",
         }
 
-    
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
@@ -123,9 +114,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         returns active status of rainpoint sensor
         """
         return self._available
-    
-
-
 
     async def get_deviceId(self, rainpoint: Rainpoint) -> dict[str]:
         """

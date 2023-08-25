@@ -2,7 +2,6 @@
     "domain": "rainpoint",
     "name": "Rainpoint",
     "config_flow": true,
-    "documentation": "https://www.home-assistant.io/integrations/rainpoint",
     "requirements": ["tinytuya"],
     "ssdp": [],
     "zeroconf": [],
@@ -10,5 +9,5 @@
     "dependencies": [],
     "codeowners": ["@mgmomo"],
     "iot_class": "cloud_polling",
-    "version": "0.1.0"
+    "version": "0.2.0"
 }

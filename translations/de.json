@@ -1,0 +1,19 @@
+{
+    "config": {
+      "error": {
+        "auth": "API Key/API Schlüssel fehlerhaft",
+        "connection_error": "Verbindung fehlgeschlagen"
+      },
+      "flow_title": "Rainpoint Initialisierung",
+      "step": {
+        "user": {
+          "title": "Rainpoint Anmeldung",
+          "description": "Anmeldedaten zur Rainpoint Clound",
+          "data": {
+            "api_key": "API Key",
+            "api_secret": "API Secret"
+          }        
+        }
+      }
+    }
+  }

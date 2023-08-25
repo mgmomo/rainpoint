@@ -23,8 +23,7 @@ CONF_DEVICES = "rainpoint_devices"
 CONF_COORDINATOR = "raiknpoint_coordinator"
 CONF_CATEGORY = "sfkzq"
 
-
-
+CONF_SCAN_INTERVAL_MINUTES = 3
 
 ATTRS_IRRIGATION_CALL = [
     ("zaehlpunktnummer", "zaehlpunktnummer"),
