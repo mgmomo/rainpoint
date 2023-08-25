@@ -43,7 +43,7 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass, entry) -> None:
         """Initialize."""
-        _LOGGER.info("Initialize Rainpoint update coordinator")
+        _LOGGER.debug("Initialize Rainpoint update coordinator")
         
         scan_interval = timedelta(minutes=CONF_SCAN_INTERVAL_MINUTES)
 
@@ -53,7 +53,7 @@ class RainpointDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> Any:
         """Update data via library."""
         try:
-            _LOGGER.info("Refreshing Rainpoint update coordinator %s " % self.entry_data)
+            _LOGGER.debug("Refreshing Rainpoint update coordinator %s " % self.entry_data)
             rainpoint = Rainpoint(self.entry_data['api_key'], self.entry_data['api_secret'])
             await self.hass.async_add_executor_job(rainpoint.login)
 

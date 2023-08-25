@@ -90,8 +90,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self) -> dict[str, Any]:
         """Return the device_info."""
-        _LOGGER.debug("Device Info coordinator data %s" % self.coordinator.data)
-
         return {
             "name": self.deviceName,
             "identifiers": { (DOMAIN, self.deviceId) },
@@ -102,8 +100,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        #self._attr_is_on = self.coordinator.data[self.idx]["state"]
-        _LOGGER.info("Base Sensor - Update Callback")
         self.async_write_ha_state()
 
     @staticmethod
@@ -123,7 +119,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         deviceList = [
             z for z in devices if z == self.deviceId
         ]
-        _LOGGER.info("Rainpoint get device ids: %s" % deviceList)
         
         if len(deviceList) == 0:
             raise RuntimeError(f"Rainpoint Device {self.deviceId} not found")

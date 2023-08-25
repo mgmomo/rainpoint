@@ -52,12 +52,7 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
-    _LOGGER.info("------------")
-    _LOGGER.info(config)
-    _LOGGER.info("------------")
     coordinator = hass.data[DOMAIN][CONF_COORDINATOR]
-    _LOGGER.info(coordinator)
-    _LOGGER.info("------------")
 
     await coordinator.async_config_entry_first_refresh()
     
@@ -75,7 +70,7 @@ async def async_setup_entry(
         for deviceId in config[CONF_DEVICES]
     ]
 
-    _LOGGER.info("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
+    _LOGGER.debug("!!!Rainpoint Sensor Setup done  - DOMAIN: %s", DOMAIN)
     async_add_entities(temp_sensors, update_before_add=True)
     async_add_entities(moisture_sensors, update_before_add=True)
     async_add_entities(flow_sensors, update_before_add=True)
@@ -90,9 +85,7 @@ async def async_setup_platform(
         DiscoveryInfoType
     ] = None,  # pylint: disable=unused-argument
 ) -> None:
-    #Set up the sensor platform by adding it into configuration.yaml
-    _LOGGER.info("!!!! Create sensor entity")
-    
+    #Set up the sensor platform by adding it into configuration.yaml    
     temp_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
     moisture_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )
     flow_sensors = MoistureSensor(hass.data[DOMAIN][CONF_COORDINATOR], config[CONF_API_KEY], config[CONF_API_SECRET] , config[CONF_DEVICES] )

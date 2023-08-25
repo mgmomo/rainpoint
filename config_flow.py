@@ -65,7 +65,7 @@ class RainpointCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 
                 _LOGGER.debug("Setup Device device data: %s" % devices)
                 return self.async_create_entry(title='Rainpoint', data=self.data )
-        _LOGGER.info("MG Setup API key done")
+        _LOGGER.debug("Rainpoint Async Setup API key done")
         return self.async_show_form(
             step_id="user", data_schema=KEY_SCHEMA, errors=errors
         )

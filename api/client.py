@@ -26,7 +26,6 @@ class Rainpoint:
         self._api_region = "eu"
         self._cloudsession = None
         self._dummy_device = ""
-        _LOGGER.info("Init Rainpoint %s" % self._cloudsession)
     
     def login(self):
         """
@@ -38,7 +37,7 @@ class Rainpoint:
         if "Error" in devices:
             raise ConfigEntryAuthFailed("Authentication error")
 
-        _LOGGER.info("Tuya Cloud Login - Success" )
+        _LOGGER.debug("Tuya Cloud Login - Success" )
         return
     
     def devices(self):
@@ -50,8 +49,6 @@ class Rainpoint:
         
         deviceList = {}
         for item in devices['result']:
-            #logger.info(item['name'])
-            
             if item['category'] == CONF_CATEGORY:
                 deviceList[item["id"]] = { 'deviceId' : item["id"] , 'deviceName': item["name"]}
                
