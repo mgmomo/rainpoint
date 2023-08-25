@@ -21,10 +21,8 @@ class Rainpoint:
                 api_key (str): Key used for API Login.
                 api_secret (str): Secret for API Login.
         """
-        #self.api_key = api_key
-        #self.api_secret = api_secret
-        self.api_key = '4wnv445jkrxcrc8c4eyx'
-        self.api_secret = 'ce639d5ebeb44029b0fdbe593e0c58fc'
+        self.api_key = api_key
+        self.api_secret = api_secret
         self._api_region = "eu"
         self._cloudsession = None
         self._dummy_device = ""
