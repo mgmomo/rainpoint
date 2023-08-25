@@ -39,7 +39,6 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
 
     def __init__(self, coordinator, api_key: str, api_secret, deviceId: str, deviceName: str) -> None:  
         super().__init__(coordinator)
-        _LOGGER.warning("Base sensor device name  %s" % deviceName)
         self.coordinator = coordinator
         self.api_key = api_key
         self.api_secret = api_secret
@@ -57,8 +56,7 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
         self._state: int | str | None = None
         self._available: bool = True
         self._updatets: str | None = None
-        
-        _LOGGER.debug("Base sensor initialisation %s" % deviceId)
+        _LOGGER.debug("Rainpoint Base sensor initialisation %s" % deviceId)
 
     @property
     def _id(self):
@@ -92,7 +90,7 @@ class BaseSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self) -> dict[str, Any]:
         """Return the device_info."""
-        _LOGGER.warning("Device Info coordinator data %s" % self.coordinator.data)
+        _LOGGER.debug("Device Info coordinator data %s" % self.coordinator.data)
 
         return {
             "name": self.deviceName,

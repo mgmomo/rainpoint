@@ -60,9 +60,6 @@ class TempSensor(BaseSensor, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        #self._attr_is_on = self.coordinator.data[self.idx]["state"]
-        _LOGGER.warning("Temp Sensor - Update Callback: %s" % self.deviceId)
-        _LOGGER.warning(self.coordinator.data[self.deviceId])
 
         self._state = self.coordinator.data[self.deviceId]['Temp']
         self._available = True

@@ -57,9 +57,7 @@ class Rainpoint:
             if item['category'] == CONF_CATEGORY:
                 deviceList[item["id"]] = { 'deviceId' : item["id"] , 'deviceName': item["name"]}
                
-        _LOGGER.warning("Client device List %s" % deviceList )
-        _LOGGER.info("Tuya Cloud Request - found  %s devices" % len(deviceList))
-
+        _LOGGER.debug("Tuya Cloud Request - found  %s devices" % len(deviceList))
         return deviceList
     
     def getProperties(self, deviceId):

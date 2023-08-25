@@ -61,9 +61,9 @@ class RainpointCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 # Input is valid, set data
                 self.data = user_input
-                _LOGGER.warning("Setup Device device data: %s" % devices)
                 self.data[CONF_DEVICES] = devices
-
+                
+                _LOGGER.debug("Setup Device device data: %s" % devices)
                 return self.async_create_entry(title='Rainpoint', data=self.data )
         _LOGGER.info("MG Setup API key done")
         return self.async_show_form(
